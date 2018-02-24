@@ -3,14 +3,17 @@ package co.songliao.pascalscanner;
 /**
  * Created by liaosong on 2018/2/23.
  */
+
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 /**
  * @author steinmee
  */
 public class SimpleScanner {
-
 
 
     // CONSTANTS
@@ -18,7 +21,6 @@ public class SimpleScanner {
     private static final int IN_ID = 1;
     private static final int IN_NUM = 2;
     private static final int COMMENT_START = 3;
-    private static final int COMMENT_END = 4;
 
 
     // Completion states
@@ -30,22 +32,12 @@ public class SimpleScanner {
     // Instance variables
     private String theSource = "";
     private int currentIndex = 0;
-    //private HashMap<String, TokenType> lookupTable = new HashMap<String, TokenType>();
+
+    private final static String SYMBOLS = "+-*/%():,;'=";
 
     // Constructor
     public SimpleScanner(String toScan) {
         this.theSource = toScan;
-//
-//        //relop
-//        lookupTable.put("=", TokenType.ASSIGN)
-//
-//        // put stuff in the lookup table
-//        lookupTable.put("+", TokenType.PLUS);
-//        lookupTable.put("-", TokenType.MINUS);
-//        lookupTable.put(";", TokenType.SEMI);
-//        lookupTable.put(":=", TokenType.ASSIGN);
-//        lookupTable.put("while", TokenType.WHILE);
-//        lookupTable.put("program", TokenType.PROGRAM);
     }
 
     // Instance functions
@@ -69,31 +61,39 @@ public class SimpleScanner {
             } else break;
 
             switch (currentState) {
-                case SimpleScanner.START:
+                case SimpleScanner.COMMENT_START:
+                    lexeme += currentChar;
+                    //if found a '{' or exceeds the length of input, throw error
+                    if (currentChar == '{' || currentIndex == theSource.length() -1) {
+                        currentState = ERROR;
+                    } else if (currentChar == '}') {
+                        lexeme = "";
+                        currentState = START;
+                    }
                     currentIndex++;
-
+                    break;
+                case SimpleScanner.START:
                     if (currentChar == '{') {
+                        currentIndex++;
                         lexeme = "{";
                         currentState = SimpleScanner.COMMENT_START;
-                    }
-                    else if (Character.isLetter(currentChar)) {
+                    } else if (Character.isLetter(currentChar)) {
                         lexeme += currentChar;
                         currentState = SimpleScanner.IN_ID;
+                        currentIndex++;
                     } else if (Character.isDigit(currentChar)) {
                         lexeme += currentChar;
                         currentState = SimpleScanner.IN_NUM;
-
-                    } else if (Character.isWhitespace(currentChar) || currentChar == ';') {
                         currentIndex++;
-                    } else if (currentChar == '+' ||
-                            currentChar == '-' ||
-                            currentChar == ';' ||
-                            currentChar == '=') {
-         
-                        currentState = SimpleScanner.SYMBOL_COMPLETE;
+                    } else if (Character.isWhitespace(currentChar)) {
+                        currentIndex++;
+                    } else if (SYMBOLS.indexOf("" + currentChar) > 0 ) {
+                       currentState = SimpleScanner.SYMBOL_COMPLETE;
                         lexeme = lexeme + currentChar;
-                    } else {
+                        currentIndex++;
 
+                    } else {
+                        currentIndex++;
                         currentState = SimpleScanner.ERROR;
                         lexeme = lexeme + currentChar;
                     }
@@ -124,9 +124,11 @@ public class SimpleScanner {
             } /// end switch
         } // end while
 
+
         // Now we are in a completion state:
         switch (currentState) {
             case ERROR:
+                //todo: for debugging sake, we dont throw error and continue to find next token
                 answer = new Token(lexeme, null);
                 break;
             case ID_COMPLETE:

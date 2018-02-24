@@ -36,5 +36,7 @@ public enum TokenType {
     INTEGER, REAL,
 
     //ID is identifier
-    ID
+    ID,
+
+    SEMICOLON, COMMA, COLON , LEFTPAREN, RIGHTPAREN, QUOTE
 }

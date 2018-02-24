@@ -15,10 +15,13 @@ import java.io.InputStreamReader;
 
 public class ScannerTest {
 
+    private String directory = "E:\\PascalScanner\\app\\src\\test\\java\\co\\songliao\\pascalscanner\\";
+
+
     @Test
     public void main(){
 
-        SimpleScanner ss = new SimpleScanner("f = 17+bar while");
+        SimpleScanner ss = new SimpleScanner("f = 17*bar while");
         //java.util.Scanner ss = new java.util.Scanner("foo = 17+bar");
         Token t = ss.nextToken();
         while( t != null){
@@ -27,12 +30,27 @@ public class ScannerTest {
         }
     }
 
+
     @Test
-    public void test2(){
-       // String input = "program helloworld;\n" +
+    public void testGoodComment(){
+        setUpScanner("comment_good.pas");
+    }
+
+    @Test
+    public void testCommentError(){
+        setUpScanner("comment_error.pas");
+    }
+
+    @Test
+    public void testSimplePas() {
+        setUpScanner("test1.pas");
+    }
+
+    //helper method
+    private void setUpScanner(String filename) {
         try {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(
-                    "E:\\PascalScanner\\app\\src\\test\\java\\co\\songliao\\pascalscanner\\test1.pas"))));
+                    this.directory + filename))));
             StringBuilder message = new StringBuilder();
             String line = null;
 
@@ -46,9 +64,11 @@ public class ScannerTest {
                 System.out.println("Token is " + t.type + " : " + t.lexeme);
                 t = ss.nextToken();
             }
+            System.out.println("=====END====");
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 }

@@ -60,7 +60,12 @@ public class LookUpTable {
 //				ID
         TABLE.put("", TokenType.ID);
 
-
+        TABLE.put(";", TokenType.SEMICOLON);
+        TABLE.put(",", TokenType.COMMA);
+        TABLE.put(":", TokenType.COLON);
+        TABLE.put("(", TokenType.LEFTPAREN);
+        TABLE.put(")", TokenType.RIGHTPAREN);
+        TABLE.put("'", TokenType.QUOTE);
     }
 
 }
